@@ -1,7 +1,12 @@
 [package]
 name = "zigbee"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["Gianmarco Garrisi <gianmarcogarrisi@tutanota.com>"]
 description = "An API for zigbee: Low-power, low-cost, low-complexity networking for the Internet of Things"
+license = "MIT/Apache-2.0"
+repository = "https://github.com/garro95/zigbee"
+readme = "README.md"
+keywords = ["zigbee", "network", "Internet of Things", "IoT", "standard"]
+categories = ["network-programming"]
 
 [dependencies]
