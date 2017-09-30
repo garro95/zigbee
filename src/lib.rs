@@ -91,6 +91,10 @@ pub mod apl {
             pub include_extended_nonce_in_aps_security_frame: bool,
         }
 
+        /// The information that the APS provides to the upper layer when a
+        /// new frame is received. This is transmitted to the NHLE issuing the
+        /// APSDE-DATA.indication primitive, calling the function provided on
+        /// the registration of the interested endpoint.
         pub struct DataIndication<'a> {
             pub dst_addr_ep: AddrAndEp,
             pub src_addr_ep: AddrAndEp,
@@ -113,6 +117,8 @@ pub mod apl {
             NldeError/*(Error)*/
         }
 
+        /// The data contained in the APSDE-DATA.confirm primitive that is issued by the
+        /// APS to the Next Higher Layer Entity in response to a APSDE-DATA.request
         pub struct DataConfirm {
             pub dst: AddrAndEp,
             pub src_endpoint: u8,
@@ -120,6 +126,7 @@ pub mod apl {
             pub tx_time: ::Duration
         }
 
+        /// The arguments needed to issue the APSDE-DATA.request primitive
         pub struct DataRequest<'a> {
             pub dst: AddrAndEp,
             pub profile_id: u16,
@@ -130,6 +137,11 @@ pub mod apl {
             pub radius: u8
         }
 
+        /// This trait is implemented by all these structs that implements an
+        /// Application Support sub-layer Data Entity in order to provide the
+        /// functionalities required by the specification.
+        ///
+        /// Crates that need the functionalities of a zigbee APSDE can rely on this trait.
         pub trait ApsdeSap{
             fn data_request(&self, request: DataRequest) -> DataConfirm;
             fn register_application_object(&self, indication_callback: Fn(DataIndication));
@@ -174,11 +186,11 @@ pub mod apl {
         }
 
         pub struct BindingTable {
-            
         }
         pub struct ChannelMask {
         }
-        pub struct GroupTable {
+        pub struct GroupTable<'a> {
+            entries: &'a Iterator<Item=(u16, Iterator<Item = u8>)>
         }
         pub struct PermissionsConfiguration {
         }
@@ -249,6 +261,10 @@ pub mod apl {
             fn remove_group_request(&self, group_adderss: u16, endpoint: u8) -> RemoveGroupConfirm;
             fn remove_all_groups_request(&self, endpoint: u8) -> RemoveAllGroupsConfirm;
         }
+        pub const MAX_DESCRIPTOR_SIZE: usize = 64;
+        pub const MAX_FRAME_RETRIES: u32 = 3;
+        pub const MIN_DUPLICATE_REJECTION_TABLE_SIZE: usize = 1;
+        pub const MIN_HEADER_OVERHEAD: usize = 0x0C;
     }
 }
 /// This module contains traits and data structures for the network layer.
