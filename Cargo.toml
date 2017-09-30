@@ -6,7 +6,7 @@ description = "An API for zigbee: Low-power, low-cost, low-complexity networking
 license = "MIT/Apache-2.0"
 repository = "https://github.com/garro95/zigbee"
 readme = "README.md"
-keywords = ["zigbee", "network", "Internet of Things", "IoT", "standard"]
+keywords = ["zigbee", "network", "smart", "IoT", "standard"]
 categories = ["network-programming"]
 
 [dependencies]
