@@ -149,16 +149,6 @@ pub mod apl {
             pub tx_time: ::Duration
         }
 
-        // pub struct DataConfirmFuture;
-        // impl Future for DataConfirmFuture {
-        //     type Item = DataConfirm;
-        //     // type Error = ;
-            
-        //     fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
-                
-        //     }
-        // }
-
         /// The arguments needed to issue the APSDE-DATA.request primitive
         pub struct DataRequest<'a> {
             pub dst: AddrAndEp,
