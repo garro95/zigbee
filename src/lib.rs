@@ -6,12 +6,17 @@
 //! MAC and PHY layers are provided by the IEEE 802.15.4-2003 standard.
 //! This library covers the upper layes as the Zigbee Standard does.
 
+extern crate futures;
+
 use std::time::Duration;
+use std::fmt;
+use std::error::Error;
 /// This module focus on the application layer.
 pub mod apl {
     /// This module provides the Frames and the primitives of the
     /// Application Support sub-layer Data Entity and Mangement Entity
     pub mod aps {
+        use futures::Future;
         mod frame_format{
             pub enum FrameType {
                 Data,
@@ -107,6 +112,7 @@ pub mod apl {
             pub rx_time: ::Duration
         }
 
+        #[derive(Debug)]
         pub enum DataConfirmStatus {
             Success,
             NoShortAddress,
@@ -117,6 +123,23 @@ pub mod apl {
             NldeError/*(Error)*/
         }
 
+        #[derive(Debug)]
+        pub struct DataError {
+            status: DataConfirmStatus
+        }
+
+        impl ::Error for DataError {
+            fn description(&self) -> &str {
+                "APSE-DATA request error"
+            }
+        }
+
+        impl ::fmt::Display for DataError {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                write!(f, "APSE-DATA request error: {:?}", self.status)
+            }
+        }
+
         /// The data contained in the APSDE-DATA.confirm primitive that is issued by the
         /// APS to the Next Higher Layer Entity in response to a APSDE-DATA.request
         pub struct DataConfirm {
@@ -125,6 +148,16 @@ pub mod apl {
             pub status: DataConfirmStatus,
             pub tx_time: ::Duration
         }
+
+        // pub struct DataConfirmFuture;
+        // impl Future for DataConfirmFuture {
+        //     type Item = DataConfirm;
+        //     // type Error = ;
+            
+        //     fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
+                
+        //     }
+        // }
 
         /// The arguments needed to issue the APSDE-DATA.request primitive
         pub struct DataRequest<'a> {
@@ -143,7 +176,7 @@ pub mod apl {
         ///
         /// Crates that need the functionalities of a zigbee APSDE can rely on this trait.
         pub trait ApsdeSap{
-            fn data_request(&self, request: DataRequest) -> DataConfirm;
+            fn data_request(&self, request: DataRequest) -> Box<Future<Item=DataConfirm, Error=DataError>>;
             fn register_application_object(&self, indication_callback: Fn(DataIndication));
         }
 

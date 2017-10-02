@@ -10,3 +10,4 @@ keywords = ["zigbee", "network", "smart", "IoT", "standard"]
 categories = ["network-programming"]
 
 [dependencies]
+futures = "0.1.14"
