@@ -11,3 +11,4 @@ categories = ["network-programming"]
 
 [dependencies]
 futures = "0.1.14"
+bitfield = "0.12"

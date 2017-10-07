@@ -5,8 +5,8 @@
 //! Specification document attached in the doc directory.
 //! MAC and PHY layers are provided by the IEEE 802.15.4-2003 standard.
 //! This library covers the upper layes as the Zigbee Standard does.
-
 extern crate futures;
+#[macro_use] extern crate bitfield;
 
 use std::time::Duration;
 use std::fmt;
@@ -160,6 +160,10 @@ pub mod apl {
             pub radius: u8
         }
 
+        pub enum RegistrationError {
+            
+        }
+
         /// This trait is implemented by all these structs that implements an
         /// Application Support sub-layer Data Entity in order to provide the
         /// functionalities required by the specification.
@@ -167,7 +171,8 @@ pub mod apl {
         /// Crates that need the functionalities of a zigbee APSDE can rely on this trait.
         pub trait ApsdeSap{
             fn data_request(&self, request: DataRequest) -> Box<Future<Item=DataConfirm, Error=DataError>>;
-            fn register_application_object(&self, indication_callback: Fn(DataIndication));
+            fn register_application_object(&self, endpoint: u8, indication_callback: Fn(DataIndication)) -> Result<(), RegistrationError>;
+            fn deregister_application_object(&self, endpoint: u8);
         }
 
         pub struct BindRequest {
@@ -288,6 +293,44 @@ pub mod apl {
         pub const MAX_FRAME_RETRIES: u32 = 3;
         pub const MIN_DUPLICATE_REJECTION_TABLE_SIZE: usize = 1;
         pub const MIN_HEADER_OVERHEAD: usize = 0x0C;
+    }
+
+    ///The framework is 
+    pub mod framework{
+        pub struct ComplexDescriptor{
+            desc: Vec<u8>
+        }
+
+        pub enum LogicalType{
+            Coordinator,
+            Router,
+            EndDevice
+        }
+
+        bitfield!{
+            pub struct NodeDescriptor([u8]);
+            pub LogicalType, into LogicalType, logical_type, _: 3;
+            pub bool, into bool,  complex_descriptor_available, _: 1;
+            pub bool, into bool, user_descriptor_available, _: 1;
+            pub aps_flags, _: 3;
+            pub frequency_band, _:5;
+            pub u8, into u8, max_capability_flags,_: 8;
+            pub u16, into u16, manufacturer_code, _: 16;
+            pub u8, into u8, maximum_buffer_size, _: 8;
+            pub u16, into u16, maximum_incoming_transfer_size,_: 16;
+            pub u16, into u16, server_mask, _: 16;
+            pub u16, into u16, maximum_outgoing_transfer_size, _: 16;
+            pub u8, into u8, descriptor_capability_field, _: 8;
+        }
+        
+        ///queried in the ZDO management entity device and service discovery
+        pub struct Descriptor {
+            pub node: NodeDescriptor<u8>,
+            pub node_power: u8,
+            pub simple: u8,
+            pub complex: Option<ComplexDescriptor>,
+            pub user: Option<u8>,
+        }
     }
 }
 /// This module contains traits and data structures for the network layer.
