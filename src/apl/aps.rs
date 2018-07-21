@@ -2,6 +2,7 @@
 //! Application Support sub-layer Data Entity and Mangement Entity
 
 use futures::Future;
+use ::apl::AddrAndEp;
 
 pub const MAX_DESCRIPTOR_SIZE: usize = 64;
 pub const MAX_FRAME_RETRIES: u32 = 3;
@@ -57,14 +58,6 @@ mod frame_format{
         pub extended_header: Option<ExtHeader>,
         pub frame_payload: &'a[u8]
     }
-}
-
-#[derive(Clone, Copy)]
-pub enum AddrAndEp{
-    None,
-    ShortAddressNoEp(u16),
-    ShortAddressWithEp(u16, u8),
-    LongAddress(u64, u8)
 }
 
 pub enum SecurityStatus {
