@@ -1,7 +1,7 @@
 //! This module provides the Frames and the primitives of the
 //! Application Support sub-layer Data Entity and Mangement Entity
 
-use futures::Future;
+use futures::future::Future;
 use ::apl::AddrAndEp;
 
 pub const MAX_DESCRIPTOR_SIZE: usize = 64;
@@ -16,11 +16,13 @@ mod frame_format{
         Command,
         Acknowledgement
     }
+
     pub enum DeliveryMode {
         NormalUnicastDelivery = 0,
         Broadcast = 2,
         GroupAddressing = 3
     }
+
     pub struct FrameControlField {
         pub frame_type:  FrameType, //this should be a bit bield of 2 bits
         pub delivery_mode: DeliveryMode,
@@ -29,6 +31,7 @@ mod frame_format{
         pub ack_request: bool,
         pub extended_header_present: bool
     }
+
     pub struct AddressingFields {
         pub destination_endpoint: Option<u8>, // only for broadcast or normal unicast
         pub group_address: Option<u16>, // only for group addressing
@@ -42,9 +45,11 @@ mod frame_format{
         FirstPart,
         NotFirstPart
     }
+
     pub struct AckBitfield {
 
     }
+
     pub struct ExtHeader {
         pub fragmentation: FragmentationField,
         pub block_number: Option<u8>,
@@ -108,23 +113,6 @@ pub enum DataConfirmStatus {
     NldeError/*(Error)*/
 }
 
-#[derive(Debug)]
-pub struct DataError {
-    status: DataConfirmStatus
-}
-
-impl ::Error for DataError {
-    fn description(&self) -> &str {
-        "APSE-DATA request error"
-    }
-}
-
-impl ::fmt::Display for DataError {
-    fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
-        write!(f, "APSE-DATA request error: {:?}", self.status)
-    }
-}
-
 /// The data contained in the APSDE-DATA.confirm primitive that is issued by the
 /// APS to the Next Higher Layer Entity in response to a APSDE-DATA.request
 pub struct DataConfirm {
@@ -155,7 +143,7 @@ pub enum RegistrationError {
 ///
 /// Crates that need the functionalities of a zigbee APSDE can rely on this trait.
 pub trait ApsdeSap{
-    fn data_request(&self, request: DataRequest) -> Box<Future<Item=DataConfirm, Error=DataError>>;
+    fn data_request(&self, request: DataRequest) -> Box<Future<Output=DataConfirm>>;
     fn register_application_object(&self, endpoint: u8, indication_callback: Fn(DataIndication)) -> Result<(), RegistrationError>;
     fn deregister_application_object(&self, endpoint: u8);
 }
