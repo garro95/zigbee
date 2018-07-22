@@ -252,6 +252,32 @@ pub struct MgmtNwkUpdateNotify {
     energy_values: Vec<u8>
 }
 
+pub struct RecoverSourceBindRsp {
+    status: Status,
+    source_table_entries: u16,
+    start_index: u16,
+    source_table_list_count: u16,
+    source_table_list: Vec<u64>
+}
+
+pub struct MgmtNwkDiscRsp {
+    status: Status,
+    network_count: u8,
+    start_index: u8,
+    network_list_count: u8,
+    network_list: Vec<NetworkListRecord>
+}
+
+pub struct NetworkListRecord {
+    extended_pan_id: u64,
+    logical_channel: u8,
+    stack_profile: u8,
+    zigbee_version: u8,
+    beacon_order: u8,
+    superframe_order: u8,
+    permit_joining: bool
+}
+
 use apl::framework::{NodeDescriptor, PowerDescriptor, SimpleDescriptor,
                      ComplexDescriptor, UserDescriptor, ServerMask};
 
@@ -290,10 +316,10 @@ pub trait DeviceProfileClient {
     fn remove_bkup_bind_entry_req(request: BindReq) -> Status;
     fn backup_bind_table_req(binding_table_entries: u16, binding_table_list: Vec<BindReq>) -> BackupBindTableRsp;
     fn recover_bind_table_req(start_index: u16) -> RecoverBindTableRsp;
-    fn backup_source_bind_req(start_table_entries: u16, start_indes: u16, source_table_list: List);
-    fn recover_source_bind_req(start_index: u16);
+    fn backup_source_bind_req(start_table_entries: u16, start_indes: u16, source_table_list: Vec<u64>) -> Status;
+    fn recover_source_bind_req(start_index: u16) -> RecoverSourceBindRsp;
     // 2.4.3.3 Network Management Client Services
-    fn mgmt_nwk_disc_req(scan_channels: u32, scan_duration: u8, start_index: u8);
+    fn mgmt_nwk_disc_req(scan_channels: u32, scan_duration: u8, start_index: u8) -> MgmtNwkDiscRsp;
     fn mgmt_lqi_req(start_index: u8) -> MgmtLqiRsp;
     fn mgmt_rtg_req(start_index: u8) -> MgmtRtgRsp;
     fn mgmt_bind_req(start_index: u8) -> MgmtBindRsp;

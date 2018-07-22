@@ -1,3 +1,5 @@
+#![feature(futures_api)]
+
 //! This library aims to provide a standard API for the interoperation of
 //! other crates that implements (parts of) the Zigbee network, that
 //! provides a protocol stack to be used in internet of things applications.
