@@ -1,30 +1,34 @@
 use futures::future::Future;
 use apl::AddrAndEp;
+use std::ops::Deref;
 
-pub struct DiscoveryStoreReq {
+pub struct DiscoveryStoreReq<T>
+where T: Deref<Target=[u8]> {
     pub nwk_addr: u16,
     pub ieee_addr: u64,
     pub node_desc_size: u8,
     pub power_desc_size: u8,
     pub active_ep_size: u8,
     pub simple_desc_count: u8,
-    pub simple_desc_size_list: &[u8]
+    pub simple_desc_size_list: T
 }
 
-pub struct MatchDescReq{
+pub struct MatchDescReq<T>
+where T:Deref<Target=[u16]> {
     pub nwk_addr_of_interest: u16,
     pub profile_id: u16,
-    pub in_cluster_list: &[u16],
-    pub out_cluster_list: &[u16]
+    pub in_cluster_list: T,
+    pub out_cluster_list: T
 }
 
-pub struct EndDeviceBindReq{
+pub struct EndDeviceBindReq<T>
+where T:Deref<Target=[u16]> {
     pub binding_target: u16,
     pub src_ieee_address: u64,
     pub src_endpoint: u8,
     pub profile_id: u16,
-    pub in_cluster_list: &[u16],
-    pub out_cluster_list: &[u16],
+    pub in_cluster_list: T,
+    pub out_cluster_list: T,
 }
 
 pub struct BindReq{
@@ -61,18 +65,20 @@ pub enum Status{
     
 }
 
-pub struct NwkAddrRsp{
+pub struct NwkAddrRsp<T>
+where T:Deref<Target=[u16]> {
     status: Status,
     ieee_addr_remote_dev: u64,
     nwk_addr_remote_dev: u16,
-    nwk_addr_assoc_dev_list: Vec<u16>,
+    nwk_addr_assoc_dev_list: T,
 }
 
-pub struct IeeeAddrRsp{
+pub struct IeeeAddrRsp<T>
+where T:Deref<Target=[u64]>{
     status: Status,
     ieee_addr_remote_dev: u64,
     nwk_addr_remote_dev: u16,
-    nwk_addr_assoc_dev_list: Vec<u64>
+    nwk_addr_assoc_dev_list: T
 }
 
 pub struct NodeDescRsp{
@@ -93,16 +99,18 @@ pub struct SimpleDescRsp{
     desc: SimpleDescriptor
 }
 
-pub struct ActiveEpRsp{
+pub struct ActiveEpRsp<T>
+where T:Deref<Target=[u8]>{
     status: Status,
     nwk_addr_of_interest: u16,
-    active_ep_list: Vec<u8>
+    active_ep_list: T
 }
 
-pub struct MatchDescRsp {
+pub struct MatchDescRsp<T>
+where T:Deref<Target=[u8]> {
     status: Status,
     nwk_addr_of_interest: u16,
-    match_list: Vec<u8>
+    match_list: T
 }
 
 pub struct ComplexDescRsp {
@@ -133,29 +141,32 @@ pub struct FindNodeCacheRsp {
     ieee_addr: u64
 }
 
-pub struct ExtendedSimpleDescRsp {
+pub struct ExtendedSimpleDescRsp<T>
+where T:Deref<Target=[u16]> {
     status: Status,
     nwk_addr_of_interest: u16,
     endpoint: u8,
     app_input_cluster_count: u8,
     app_output_cluster_count: u8,
     start_index: u8,
-    app_cluster_list: Vec<u16>
+    app_cluster_list: T
 }
 
-pub struct ExtendedActiveEpRsp {
+pub struct ExtendedActiveEpRsp<T>
+where T:Deref<Target=[u8]> {
     status: Status,
     nwk_addr_of_interest: u16,
     active_ep_count: u8,
     start_index: u8,
-    active_ep_list: Vec<u8>
+    active_ep_list: T
 }
 
-pub struct BindRegisterRsp {
+pub struct BindRegisterRsp<T>
+where T:Deref<Target=[BindReq]> {
     status: Status,
     binding_table_entries: u16,
     binding_table_list_count: u16,
-    binding_table_list: Vec<BindReq>
+    binding_table_list: T
 }
 
 pub struct BackupBindTableRsp {
@@ -163,20 +174,22 @@ pub struct BackupBindTableRsp {
     entry_count: u16
 }
 
-pub struct RecoverBindTableRsp {
+pub struct RecoverBindTableRsp<T>
+where T:Deref<Target=[BindReq]> {
     status: Status,
     binding_table_entries: u16,
     start_index: u16,
     binding_table_list_count: u16,
-    binding_table_list: Vec<BindReq>
+    binding_table_list: T
 }
 
-pub struct MgmtLqiRsp {
+pub struct MgmtLqiRsp<T>
+where T:Deref<Target=[NeighborTableListRecord]> {
     status: Status,
     neighbor_table_entries: u8,
     start_index: u8,
     neighbor_table_list_count: u8,
-    neighbor_table_list: Vec<NeighborTableListRecord>
+    neighbor_table_list: T
 }
 
 pub struct NeighborTableListRecord {
@@ -191,12 +204,13 @@ pub struct NeighborTableListRecord {
     lqi: u8
 }
 
-pub struct MgmtRtgRsp {
+pub struct MgmtRtgRsp<T>
+where T:Deref<Target=[RoutingTableListRecord]> {
     status: Status,
     routing_table_entries: u8,
     start_index: u8,
     routing_table_list_count: u8,
-    routing_table_list: Vec<RoutingTableListRecord>
+    routing_table_list: T
 }
 
 pub enum RouteStatus {
@@ -216,12 +230,13 @@ pub struct RoutingTableListRecord {
     next_hop_address: u16
 }
 
-pub struct MgmtBindRsp {
+pub struct MgmtBindRsp<T>
+where T:Deref<Target=[BindingTableListRecord]> {
     status: Status,
     binding_table_entries: u8,
     start_index: u8,
     binding_table_list_count: u8,
-    binding_table_list: Vec<BindingTableListRecord>
+    binding_table_list: T
 }
 
 pub struct BindingTableListRecord {
@@ -231,12 +246,13 @@ pub struct BindingTableListRecord {
     dst_addr: AddrAndEp
 }
 
-pub struct MgmtCacheRsp {
+pub struct MgmtCacheRsp<T>
+where T:Deref<Target=[DiscoveryCacheListRecord]> {
     status: Status,
     discovery_cache_entries: u8,
     start_index: u8,
     dicovery_cache_list_count: u8,
-    discovery_cache_list: Vec<DiscoveryCacheListRecord>
+    discovery_cache_list: T
 }
 
 pub struct DiscoveryCacheListRecord {
@@ -291,28 +307,28 @@ use apl::framework::{NodeDescriptor, PowerDescriptor, SimpleDescriptor,
 pub trait DeviceProfileClient {
     //2.4.3.1 Device and Service Discovery Client Services
     //directed to remote devices => should return futures.
-    fn nwk_addr_req(ieee_address: u64, request_type: u8, start_index: u8) -> Box<Future<Output=NwkAddrRsp>>;
-    fn ieee_addr_req(nwk_addr_of_interest: u16, request_type: u8, start_index:u8) -> Box<Future<Output=IeeeAddrRsp>>;
+    fn nwk_addr_req<T> (ieee_address: u64, request_type: u8, start_index: u8) -> Box<Future<Output=NwkAddrRsp<T>>>;
+    fn ieee_addr_req<T>(nwk_addr_of_interest: u16, request_type: u8, start_index:u8) -> Box<Future<Output=IeeeAddrRsp<T>>>;
     fn node_desc_req(nwk_addr_of_interest: u16) -> Box<Future<Output=NodeDescRsp>>;
     fn power_desc_req(nwk_addr_of_interest: u16)-> Box<Future<Output=PowerDescRsp>>;
     fn simple_desc_req(nwk_addr_of_interest: u16, endpoint: u8) -> Box<Future<Output=SimpleDescRsp>>;
-    fn active_ep_req(nwk_addr_of_interest: u16) -> Box<Future<Output=ActiveEpRsp>>;
-    fn match_desc_req(request: MatchDescReq) -> Box<Future<Output=MatchDescRsp>>;
+    fn active_ep_req<T>(nwk_addr_of_interest: u16) -> Box<Future<Output=ActiveEpRsp<T>>>;
+    fn match_desc_req<T, U>(request: MatchDescReq<T>) -> Box<Future<Output=MatchDescRsp<U>>>;
     fn complex_desc_req(nwk_addr_of_interest: u16) -> Box<Future<Output=ComplexDescRsp>>;
     fn user_desc_req(nwk_addr_of_interest: u16) -> Box<Future<Output=UserDescRsp>>;
     fn discovery_cache_req(nwk_addr: u16, ieee_addr: u64) -> Box<Future<Output=Status>>;
     fn devce_annce(nwk_addr: u16, ieee_addr:u64, capability:u8);
     fn user_desc_set(nwk_addr_of_interest:u16, &[u8]) -> Box<Future<Output=UserDescConf>>;
     fn system_server_discovery_req(server_mask:u16) -> Box<Future<Output=SystemServerDiscoveryRsp>>;
-    fn discovery_store_req(request: DiscoveryStoreReq) -> Box<Future<Output=Status>>;
-    fn node_desc_store_req(nwk_addr: u16, ieee_addr: u64, descriptor: NodeDescriptor) -> Box<Future<Output=Status>>;
-    fn power_desc_store_req(nwk_addr: u16, ieee_addr: u64, descriptor: PowerDescriptor) -> Box<Future<Output=PowerDescStoreRsp>>;
+    fn discovery_store_req<T>(request: DiscoveryStoreReq<T>) -> Box<Future<Output=Status>>;
+    fn node_desc_store_req<T>(nwk_addr: u16, ieee_addr: u64, descriptor: NodeDescriptor<T>) -> Box<Future<Output=Status>>;
+    fn power_desc_store_req<T>(nwk_addr: u16, ieee_addr: u64, descriptor: PowerDescriptor<T>) -> Box<Future<Output=PowerDescStoreRsp>>;
     fn active_ep_store_req(nwk_addr: u16, ieee_addr: u64, active_ep_list: &[u8]) -> Box<Future<Output=Status>>;
     fn simple_desc_store_req(nwk_addr: u16, ieee_addr: u64, descriptor: SimpleDescriptor) -> Box<Future<Output=Status>>;
     fn remove_node_cache_req(nwk_addr: u16, ieee_addr: u64) -> Box<Future<Output=Status>>;
     fn find_node_cache_req(nwk_addr: u16, ieee_addr: u64) -> Box<Future<Output=FindNodeCacheRsp>>;
-    fn extended_simple_desc_req(nwk_addr_of_interest: u16, endpoint: u8, start_index: u8) -> Box<Future<Output=ExtendedSimpleDescRsp>>;
-    fn extended_active_ep_req(nwk_addr_of_interest: u16, start_index: u8) -> Box<Future<Output=ExtendedActiveEpRsp>>;
+    fn extended_simple_desc_req<T>(nwk_addr_of_interest: u16, endpoint: u8, start_index: u8) -> Box<Future<Output=ExtendedSimpleDescRsp<T>>>;
+    fn extended_active_ep_req<T>(nwk_addr_of_interest: u16, start_index: u8) -> Box<Future<Output=ExtendedActiveEpRsp<T>>>;
     // 2.4.3.2 End Device Bind, Bind, Unbind, and Bind Management Client Services Primitives
     fn end_device_bind_req(request: EndDeviceBindReq) -> Box<Future<Output=Status>>;
     fn bind_req(request: BindReq) -> Box<Future<Output=Status>>;
