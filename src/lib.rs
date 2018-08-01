@@ -1,3 +1,4 @@
+#![feature(rust_2018_preview)]
 #![feature(futures_api)]
 
 //! This library aims to provide a standard API for the interoperation of
@@ -11,9 +12,12 @@ extern crate futures;
 #[macro_use] extern crate serde_derive;
 #[macro_use] extern crate bitfield;
 
+pub enum Unknownable<T> {
+    Known(T),
+    Unknown
+}
+
 use std::time::Duration;
-use std::fmt;
-use std::error::Error;
 /// This module focus on the application layer.
 pub mod apl;
 pub mod nwk;

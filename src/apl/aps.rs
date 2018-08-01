@@ -3,6 +3,7 @@
 
 use futures::future::Future;
 use ::apl::AddrAndEp;
+use std::borrow::Cow;
 
 pub const MAX_DESCRIPTOR_SIZE: usize = 64;
 pub const MAX_FRAME_RETRIES: u32 = 3;
@@ -10,6 +11,8 @@ pub const MIN_DUPLICATE_REJECTION_TABLE_SIZE: usize = 1;
 pub const MIN_HEADER_OVERHEAD: usize = 0x0C;
 
 mod frame_format{
+    use std::borrow::Cow;
+    
     #[derive(Serialize, Deserialize)]
     pub enum FrameType {
         Data,
@@ -61,7 +64,7 @@ mod frame_format{
         pub address: AddressingFields,
         pub aps_counter: u8,
         pub extended_header: Option<ExtHeader>,
-        pub frame_payload: &'a[u8]
+        pub frame_payload: Cow<'a, [u8]>
     }
 }
 
@@ -95,7 +98,7 @@ pub struct DataIndication<'a> {
     pub src_addr_ep: AddrAndEp,
     pub profile_id: u16,
     pub cluster_id: u16,
-    pub asdu: &'a[u8],
+    pub asdu: Cow<'a, [u8]>,
     pub status: IndicationStatus,
     pub security_status: SecurityStatus,
     pub link_quality: u8,
@@ -128,7 +131,7 @@ pub struct DataRequest<'a> {
     pub profile_id: u16,
     pub cluster_id: u16,
     pub src_endpoint: u8,
-    pub asdu: &'a[u8],
+    pub asdu: Cow<'a, [u8]>,
     pub options: TxOptions,
     pub radius: u8
 }
@@ -143,7 +146,7 @@ pub enum RegistrationError {
 ///
 /// Crates that need the functionalities of a zigbee APSDE can rely on this trait.
 pub trait ApsdeSap{
-    fn data_request(&self, request: DataRequest) -> Box<Future<Output=DataConfirm>>;
+    fn data_request(&self, request: DataRequest<'a>) -> Box<Future<Output=DataConfirm>>;
     fn register_application_object(&self, endpoint: u8, indication_callback: Fn(DataIndication)) -> Result<(), RegistrationError>;
     fn deregister_application_object(&self, endpoint: u8);
 }
@@ -185,6 +188,8 @@ pub struct UnbindConfirm {
     pub cluster_id: u16,
     pub dst_addr: AddrAndEp
 }
+
+// TODO: Fill structs
 
 pub struct BindingTable {
 }
