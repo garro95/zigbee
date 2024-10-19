@@ -1,3 +1,5 @@
+**THIS REPOSITORY HAS BEEN ARCHIVED AND THE OWNERSHIP OF THE CRATE TRANSFERED TO [thebino](https://github.com/thebino)**
+
 # zigbee
 A crate for the Rust programming Laguage that aims to provide a common interface for the interoperability of other crates that implements parts of the ZigBee stack.
 
